@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { Links } from './links';
+import { BillPay } from './forms/bill-pay';
 
 @Component({
   selector: 'app-root',
-  imports: [Links],
+  imports: [Links, BillPay],
   template: `
     <h1>Signal Forms + NgRx + NgRx Toolkit</h1>
 
@@ -25,6 +26,10 @@ import { Links } from './links';
       NgRx itself? I (Michael Small) am not sure and cannot speak for the NgRx team. But I am
       experimenting.
     </p>
+
+    <h2>Bill Pay Form</h2>
+
+    <app-bill-pay />
   `,
 })
 export class App {}
