@@ -3,11 +3,7 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './app.css',
+  imports: [],
+  template: ` <h1>Signal Forms + NgRx + NgRx Toolkit</h1> `,
 })
-export class App {
-  protected readonly title = signal('signal-forms-ngrx');
-}
+export class App {}
