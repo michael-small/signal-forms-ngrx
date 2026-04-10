@@ -1,9 +1,12 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { Links } from './links';
 
 @Component({
   selector: 'app-root',
-  imports: [],
-  template: ` <h1>Signal Forms + NgRx + NgRx Toolkit</h1> `,
+  imports: [Links],
+  template: `
+    <h1>Signal Forms + NgRx + NgRx Toolkit</h1>
+    <app-links />
+  `,
 })
 export class App {}
