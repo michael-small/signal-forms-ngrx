@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Links } from './links';
 import { BillPay } from './forms/bill-pay';
+import { ConditionalReset } from './forms/conditional-reset-fields/conditional-reset';
 
 @Component({
   selector: 'app-root',
-  imports: [Links, BillPay],
+  imports: [Links, BillPay, ConditionalReset],
   template: `
     <h1>Signal Forms + NgRx + NgRx Toolkit</h1>
 
@@ -26,6 +27,10 @@ import { BillPay } from './forms/bill-pay';
       NgRx itself? I (Michael Small) am not sure and cannot speak for the NgRx team. But I am
       experimenting.
     </p>
+
+    <h2>Conditional Reset Fields Form</h2>
+
+    <app-conditional-reset />
 
     <h2>Bill Pay Form</h2>
 
