@@ -13,6 +13,11 @@ import {
 } from '@angular/forms/signals';
 import { delay, Observable, of } from 'rxjs';
 
+type QueryArguments<ValueType extends number | string> = {
+  comparator: string;
+  value: ValueType;
+};
+
 type TableField = {
   id: string;
   name: string;
@@ -23,28 +28,22 @@ type DomainModel = {
   dbTable: string;
   dbField: TableField['id'];
   comparator: string;
-  value: string;
+  value: string | number;
 };
 
 type FormModel = {
   dbTable: string;
   dbField: TableField['id'];
   fieldType: 'number' | 'text' | '';
-  numbers: {
-    comparator: string;
-    value: number;
-  };
-  text: {
-    comparator: string;
-    value: string;
-  };
+  numbers: QueryArguments<number>;
+  text: QueryArguments<string>;
 };
 
-const numbersDefault = {
+const numbersDefault: QueryArguments<number> = {
   comparator: '',
   value: 0,
 };
-const textDefault = {
+const textDefault: QueryArguments<string> = {
   comparator: '',
   value: '',
 };
