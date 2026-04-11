@@ -11,19 +11,25 @@ import {
   required,
   validate,
 } from '@angular/forms/signals';
-import { of } from 'rxjs';
+import { delay, Observable, of } from 'rxjs';
+
+type TableField = {
+  id: string;
+  name: string;
+  type: 'number' | 'text';
+};
 
 type DomainModel = {
   dbTable: string;
-  dbField: string;
+  dbField: TableField['id'];
   comparator: string;
   value: string;
 };
 
 type FormModel = {
   dbTable: string;
-  dbField: string;
-  fieldType: string;
+  dbField: TableField['id'];
+  fieldType: 'number' | 'text' | '';
   numbers: {
     comparator: string;
     value: number;
@@ -34,24 +40,36 @@ type FormModel = {
   };
 };
 
+const numbersDefault = {
+  comparator: '',
+  value: 0,
+};
+const textDefault = {
+  comparator: '',
+  value: '',
+};
+
 @Injectable({
   providedIn: 'root',
 })
 export class ConditionalResetDataService {
-  getTableFields(tableId: string) {
+  getTableFields(tableId: string): Observable<TableField[]> {
+    let fields: TableField[] = [];
+
     if (tableId === 'users') {
-      return of([
+      fields = [
         { id: 'id', name: 'User ID', type: 'number' },
         { id: 'name', name: 'User Name', type: 'text' },
-      ]);
+      ];
     } else if (tableId === 'orders') {
-      return of([
+      fields = [
         { id: 'id', name: 'Order ID', type: 'number' },
         { id: 'name', name: 'Order Name', type: 'text' },
-      ]);
+      ];
     } else {
-      return of([]);
+      fields = [];
     }
+    return of(fields).pipe(delay(1000));
   }
 }
 
@@ -107,11 +125,9 @@ export class ConditionalResetDataService {
       }
     </form>
 
-    <pre>{{ dbFields.value() | json }}</pre>
+    <pre>Form Value: {{ form().value() | json }}</pre>
 
-    <pre>{{ form().value() | json }}</pre>
-
-    <pre>Errors: {{ form().errorSummary() | json }}</pre>
+    <pre>Form Errors: {{ form().errorSummary() | json }}</pre>
   `,
 })
 export class ConditionalReset {
@@ -122,13 +138,7 @@ export class ConditionalReset {
     { id: 'orders', name: 'Orders' },
   ]);
 
-  dbFields: ResourceRef<
-    {
-      id: string;
-      name: string;
-      type: string;
-    }[]
-  > = rxResource({
+  dbFields: ResourceRef<TableField[]> = rxResource({
     params: () => this.model().dbTable,
     stream: (source) => this.#dataService.getTableFields(source.params),
     defaultValue: [],
@@ -138,14 +148,8 @@ export class ConditionalReset {
     dbTable: '',
     dbField: '',
     fieldType: '',
-    numbers: {
-      comparator: '',
-      value: 0,
-    },
-    text: {
-      comparator: '',
-      value: '',
-    },
+    numbers: numbersDefault,
+    text: textDefault,
   });
 
   form = form<FormModel>(this.model, (schema) => {
@@ -162,7 +166,7 @@ export class ConditionalReset {
 
     required(schema.numbers.comparator);
     required(schema.numbers.value);
-    min(schema.numbers.value, 1);
+    min(schema.numbers.value, 0);
   });
 
   constructor() {
@@ -177,7 +181,12 @@ export class ConditionalReset {
       .find((field) => field.id === this.model().dbField);
 
     if (selectedDbField) {
-      this.model.update((model) => ({ ...model, fieldType: selectedDbField.type }));
+      this.model.update((model) => ({
+        ...model,
+        fieldType: selectedDbField.type,
+        numbers: selectedDbField.type === 'number' ? model.numbers : numbersDefault,
+        text: selectedDbField.type === 'text' ? model.text : textDefault,
+      }));
     }
   }
 }
