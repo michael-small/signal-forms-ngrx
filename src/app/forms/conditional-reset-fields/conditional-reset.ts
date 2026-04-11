@@ -176,20 +176,18 @@ export class ConditionalReset {
   });
 
   form = form<FormModel>(this.model, (schema) => {
-    readonly(schema.fieldType); // TODO - make sense that it is readonly?
-
-    hidden(schema.numbers, () => this.model().fieldType !== 'number');
-    hidden(schema.text, () => this.model().fieldType !== 'text');
+    readonly(schema.fieldType);
 
     required(schema.dbTable, { message: 'DB Table is required' });
     required(schema.dbField, { message: 'DB Field is required' });
 
+    hidden(schema.numbers, () => this.model().fieldType !== 'number');
+    required(schema.numbers.comparator, { message: 'Number Comparator is required' });
+    min(schema.numbers.value, 0);
+
+    hidden(schema.text, () => this.model().fieldType !== 'text');
     required(schema.text.comparator, { message: 'Text Comparator is required' });
     required(schema.text.value, { message: 'Text Value is required' });
-
-    required(schema.numbers.comparator, { message: 'Number Comparator is required' });
-    required(schema.numbers.value, { message: 'Number Value is required' });
-    min(schema.numbers.value, 0);
   });
 
   constructor() {
