@@ -1,55 +1,18 @@
 import { JsonPipe } from '@angular/common';
-import { Component, effect, Injectable, linkedSignal, ResourceRef, signal } from '@angular/core';
+import { Component, effect, inject, ResourceRef, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { form, FormField, FormRoot, hidden, min, readonly, required } from '@angular/forms/signals';
 import {
-  form,
-  FormField,
-  FormRoot,
-  hidden,
-  min,
-  readonly,
-  required,
-  validate,
-} from '@angular/forms/signals';
-import { delay, Observable, of } from 'rxjs';
+  NumberComparator,
+  numberComparators,
+  QueryArguments,
+  TableField,
+  TextComparator,
+  textComparators,
+} from './entity.model';
+import { EntityDataService } from './entity.service';
 
-const numberComparators = [
-  { value: 'equals', label: 'Equals' },
-  { value: 'greater', label: 'Greater Than' },
-  { value: 'less', label: 'Less Than' },
-] as const;
-
-const textComparators = [
-  { value: 'equals', label: 'Equals' },
-  { value: 'contains', label: 'Contains' },
-] as const;
-
-type NumberComparator = (typeof numberComparators)[number]['value'];
-type TextComparator = (typeof textComparators)[number]['value'];
-
-type QueryArguments<
-  ComparatorType extends NumberComparator | TextComparator | '',
-  ValueType extends number | string,
-> = {
-  comparator: ComparatorType;
-  value: ValueType;
-};
-
-type TableField = {
-  id: string;
-  name: string;
-  type: 'number' | 'text';
-};
-
-// TODO - use on submit
-type DomainModel = {
-  dbTable: string;
-  dbField: TableField['id'];
-  comparator: string;
-  value: string | number;
-};
-
-type FormModel = {
+export type FormModel = {
   dbTable: string;
   dbField: TableField['id'];
   fieldType: 'number' | 'text' | '';
@@ -65,32 +28,6 @@ const textDefault: QueryArguments<TextComparator | '', string> = {
   comparator: '',
   value: '',
 };
-
-@Injectable({
-  providedIn: 'root',
-})
-export class ConditionalResetDataService {
-  getTableFields(tableId: string): Observable<TableField[]> {
-    let fields: TableField[] = [];
-
-    if (tableId === 'users') {
-      fields = [
-        { id: 'id', name: 'User ID', type: 'number' },
-        { id: 'name', name: 'User Name', type: 'text' },
-        { id: 'email', name: 'User Email', type: 'text' },
-      ];
-    } else if (tableId === 'orders') {
-      fields = [
-        { id: 'id', name: 'Order ID', type: 'number' },
-        { id: 'name', name: 'Order Name', type: 'text' },
-        { id: 'amount', name: 'Order Amount', type: 'number' },
-      ];
-    } else {
-      fields = [];
-    }
-    return of(fields).pipe(delay(1000));
-  }
-}
 
 @Component({
   selector: 'app-conditional-reset',
@@ -151,7 +88,7 @@ export class ConditionalResetDataService {
   `,
 })
 export class ConditionalReset {
-  readonly #dataService = new ConditionalResetDataService();
+  readonly #dataService = inject(EntityDataService);
 
   numberComparators = numberComparators;
   textComparators = textComparators;

@@ -1,0 +1,29 @@
+import { Injectable } from '@angular/core';
+import { delay, Observable, of } from 'rxjs';
+import { TableField } from './entity.model';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class EntityDataService {
+  getTableFields(tableId: string): Observable<TableField[]> {
+    let fields: TableField[] = [];
+
+    if (tableId === 'users') {
+      fields = [
+        { id: 'id', name: 'User ID', type: 'number' },
+        { id: 'name', name: 'User Name', type: 'text' },
+        { id: 'email', name: 'User Email', type: 'text' },
+      ];
+    } else if (tableId === 'orders') {
+      fields = [
+        { id: 'id', name: 'Order ID', type: 'number' },
+        { id: 'name', name: 'Order Name', type: 'text' },
+        { id: 'amount', name: 'Order Amount', type: 'number' },
+      ];
+    } else {
+      fields = [];
+    }
+    return of(fields).pipe(delay(1000));
+  }
+}
