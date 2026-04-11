@@ -13,8 +13,25 @@ import {
 } from '@angular/forms/signals';
 import { delay, Observable, of } from 'rxjs';
 
-type QueryArguments<ValueType extends number | string> = {
-  comparator: string;
+const numberComparators = [
+  { value: 'equals', label: 'Equals' },
+  { value: 'greater', label: 'Greater Than' },
+  { value: 'less', label: 'Less Than' },
+] as const;
+
+const textComparators = [
+  { value: 'equals', label: 'Equals' },
+  { value: 'contains', label: 'Contains' },
+] as const;
+
+type NumberComparator = (typeof numberComparators)[number]['value'];
+type TextComparator = (typeof textComparators)[number]['value'];
+
+type QueryArguments<
+  ComparatorType extends NumberComparator | TextComparator | '',
+  ValueType extends number | string,
+> = {
+  comparator: ComparatorType;
   value: ValueType;
 };
 
@@ -24,6 +41,7 @@ type TableField = {
   type: 'number' | 'text';
 };
 
+// TODO - use on submit
 type DomainModel = {
   dbTable: string;
   dbField: TableField['id'];
@@ -35,15 +53,15 @@ type FormModel = {
   dbTable: string;
   dbField: TableField['id'];
   fieldType: 'number' | 'text' | '';
-  numbers: QueryArguments<number>;
-  text: QueryArguments<string>;
+  numbers: QueryArguments<NumberComparator | '', number>;
+  text: QueryArguments<TextComparator | '', string>;
 };
 
-const numbersDefault: QueryArguments<number> = {
+const numbersDefault: QueryArguments<NumberComparator | '', number> = {
   comparator: '',
   value: 0,
 };
-const textDefault: QueryArguments<string> = {
+const textDefault: QueryArguments<TextComparator | '', string> = {
   comparator: '',
   value: '',
 };
@@ -100,9 +118,9 @@ export class ConditionalResetDataService {
         <label>
           Comparator
           <select [formField]="form.numbers.comparator">
-            <option value="equals">Equals</option>
-            <option value="greater">Greater Than</option>
-            <option value="less">Less Than</option>
+            @for (comparator of numberComparators; track comparator) {
+              <option [value]="comparator.value">{{ comparator.label }}</option>
+            }
           </select>
         </label>
 
@@ -114,8 +132,9 @@ export class ConditionalResetDataService {
         <label>
           Comparator
           <select [formField]="form.text.comparator">
-            <option value="equals">Equals</option>
-            <option value="contains">Contains</option>
+            @for (comparator of textComparators; track comparator) {
+              <option [value]="comparator.value">{{ comparator.label }}</option>
+            }
           </select>
         </label>
 
@@ -133,6 +152,9 @@ export class ConditionalResetDataService {
 })
 export class ConditionalReset {
   readonly #dataService = new ConditionalResetDataService();
+
+  numberComparators = numberComparators;
+  textComparators = textComparators;
 
   dbTables = signal<{ id: string; name: string }[]>([
     { id: 'users', name: 'Users' },
@@ -159,14 +181,14 @@ export class ConditionalReset {
     hidden(schema.numbers, () => this.model().fieldType !== 'number');
     hidden(schema.text, () => this.model().fieldType !== 'text');
 
-    required(schema.dbTable);
-    required(schema.dbField);
+    required(schema.dbTable, { message: 'DB Table is required' });
+    required(schema.dbField, { message: 'DB Field is required' });
 
-    required(schema.text.comparator);
-    required(schema.text.value);
+    required(schema.text.comparator, { message: 'Text Comparator is required' });
+    required(schema.text.value, { message: 'Text Value is required' });
 
-    required(schema.numbers.comparator);
-    required(schema.numbers.value);
+    required(schema.numbers.comparator, { message: 'Number Comparator is required' });
+    required(schema.numbers.value, { message: 'Number Value is required' });
     min(schema.numbers.value, 0);
   });
 
