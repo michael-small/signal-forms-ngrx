@@ -6,7 +6,15 @@ import { TableField } from './entity.model';
   providedIn: 'root',
 })
 export class EntityDataService {
-  getTableFields(tableId: string): Observable<TableField[]> {
+  public getDbTables(): Observable<{ id: string; name: string }[]> {
+    const tables = [
+      { id: 'users', name: 'Users' },
+      { id: 'orders', name: 'Orders' },
+    ];
+    return of(tables).pipe(delay(1000));
+  }
+
+  public getTableFields(tableId: string): Observable<TableField[]> {
     let fields: TableField[] = [];
 
     if (tableId === 'users') {

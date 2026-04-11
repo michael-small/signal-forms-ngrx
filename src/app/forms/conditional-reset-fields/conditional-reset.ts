@@ -11,11 +11,12 @@ import {
   textComparators,
 } from './entity.model';
 import { EntityDataService } from './entity.service';
+import { Observable } from 'rxjs';
 
 export type FormModel = {
   dbTable: string;
   dbField: TableField['id'];
-  fieldType: 'number' | 'text' | '';
+  fieldType: TableField['type'] | '';
   numbers: QueryArguments<NumberComparator | '', number>;
   text: QueryArguments<TextComparator | '', string>;
 };
@@ -37,8 +38,9 @@ const textDefault: QueryArguments<TextComparator | '', string> = {
       <label>
         DB Table
         <select [formField]="form.dbTable">
-          <option value="users">Users</option>
-          <option value="orders">Orders</option>
+          @for (table of dbTables.value(); track table.id) {
+            <option [value]="table.id">{{ table.name }}</option>
+          }
         </select>
       </label>
 
@@ -90,21 +92,21 @@ const textDefault: QueryArguments<TextComparator | '', string> = {
 export class ConditionalReset {
   readonly #dataService = inject(EntityDataService);
 
-  numberComparators = numberComparators;
-  textComparators = textComparators;
+  protected numberComparators = numberComparators;
+  protected textComparators = textComparators;
 
-  dbTables = signal<{ id: string; name: string }[]>([
-    { id: 'users', name: 'Users' },
-    { id: 'orders', name: 'Orders' },
-  ]);
+  protected dbTables: ResourceRef<{ id: string; name: string }[]> = rxResource({
+    stream: () => this.#dataService.getDbTables(),
+    defaultValue: [],
+  });
 
-  dbFields: ResourceRef<TableField[]> = rxResource({
+  protected dbFields: ResourceRef<TableField[]> = rxResource({
     params: () => this.model().dbTable,
     stream: (source) => this.#dataService.getTableFields(source.params),
     defaultValue: [],
   });
 
-  model = signal<FormModel>({
+  private model = signal<FormModel>({
     dbTable: '',
     dbField: '',
     fieldType: '',
@@ -118,20 +120,14 @@ export class ConditionalReset {
     required(schema.dbTable, { message: 'DB Table is required' });
     required(schema.dbField, { message: 'DB Field is required' });
 
-    hidden(schema.numbers, () => this.model().fieldType !== 'number');
+    hidden(schema.numbers, ({ valueOf }) => valueOf(schema.fieldType) !== 'number');
     required(schema.numbers.comparator, { message: 'Number Comparator is required' });
     min(schema.numbers.value, 0);
 
-    hidden(schema.text, () => this.model().fieldType !== 'text');
+    hidden(schema.text, ({ valueOf }) => valueOf(schema.fieldType) !== 'text');
     required(schema.text.comparator, { message: 'Text Comparator is required' });
     required(schema.text.value, { message: 'Text Value is required' });
   });
-
-  constructor() {
-    effect(() => {
-      console.log(this.form().value());
-    });
-  }
 
   protected setFieldType() {
     const selectedDbField = this.dbFields
@@ -146,5 +142,11 @@ export class ConditionalReset {
         text: selectedDbField.type === 'text' ? model.text : textDefault,
       }));
     }
+  }
+
+  constructor() {
+    effect(() => {
+      console.log(this.form().value());
+    });
   }
 }
