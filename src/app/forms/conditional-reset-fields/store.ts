@@ -57,14 +57,8 @@ export const Store = signalStore(
     { errorHandling: 'previous value' },
   ),
   withMethods((store) => ({
-    mapFormState(): FormModel {
-      return {
-        ...store.form(),
-      };
-    },
-    setFormState(val: FormModel): void {
-      updateState(store, 'set Form State', { form: val });
-    },
+    mapFormState: () => ({ ...store.form() }),
+    setFormState: (val: FormModel) => updateState(store, 'set Form State', { form: val }),
     setFieldType(): void {
       const selectedDbField = store
         .dbFieldsValue()
