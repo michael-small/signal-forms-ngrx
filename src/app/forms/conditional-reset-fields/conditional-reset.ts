@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, effect, inject, ResourceRef, signal } from '@angular/core';
+import { Component, computed, effect, inject, ResourceRef, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot, hidden, min, readonly, required } from '@angular/forms/signals';
 import {
@@ -12,6 +12,9 @@ import {
 } from './entity.model';
 import { EntityDataService } from './entity.service';
 import { Observable } from 'rxjs';
+import { getState } from '@ngrx/signals';
+import { numbersDefault, Store, textDefault } from './store';
+import { projectedSignal } from '../../prototypes/delegatedSignal-Kobi-Hari-prototype/lib/projected-signal';
 
 export type FormModel = {
   dbTable: string;
@@ -19,15 +22,6 @@ export type FormModel = {
   fieldType: TableField['type'] | '';
   numbers: QueryArguments<NumberComparator | '', number>;
   text: QueryArguments<TextComparator | '', string>;
-};
-
-const numbersDefault: QueryArguments<NumberComparator | '', number> = {
-  comparator: '',
-  value: 0,
-};
-const textDefault: QueryArguments<TextComparator | '', string> = {
-  comparator: '',
-  value: '',
 };
 
 @Component({
@@ -91,9 +85,15 @@ const textDefault: QueryArguments<TextComparator | '', string> = {
 })
 export class ConditionalReset {
   readonly #dataService = inject(EntityDataService);
+  readonly #store = inject(Store);
 
   protected numberComparators = numberComparators;
   protected textComparators = textComparators;
+
+  readonly projected = projectedSignal({
+    computation: () => computed(() => getState(this.#store))(),
+    update: (value) => this.#store.setFormState(value),
+  });
 
   protected dbTables: ResourceRef<{ id: string; name: string }[]> = rxResource({
     stream: () => this.#dataService.getDbTables(),
@@ -101,20 +101,12 @@ export class ConditionalReset {
   });
 
   protected dbFields: ResourceRef<TableField[]> = rxResource({
-    params: () => this.model().dbTable,
+    params: () => this.projected().dbTable,
     stream: (source) => this.#dataService.getTableFields(source.params),
     defaultValue: [],
   });
 
-  private model = signal<FormModel>({
-    dbTable: '',
-    dbField: '',
-    fieldType: '',
-    numbers: numbersDefault,
-    text: textDefault,
-  });
-
-  form = form<FormModel>(this.model, (schema) => {
+  form = form<FormModel>(this.projected, (schema) => {
     readonly(schema.fieldType);
 
     required(schema.dbTable, { message: 'DB Table is required' });
@@ -132,10 +124,10 @@ export class ConditionalReset {
   protected setFieldType() {
     const selectedDbField = this.dbFields
       .value()
-      .find((field) => field.id === this.model().dbField);
+      .find((field) => field.id === this.projected().dbField);
 
     if (selectedDbField) {
-      this.model.update((model) => ({
+      this.projected.update((model) => ({
         ...model,
         fieldType: selectedDbField.type,
         numbers: selectedDbField.type === 'number' ? model.numbers : numbersDefault,
