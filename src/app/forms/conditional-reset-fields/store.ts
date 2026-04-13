@@ -16,25 +16,7 @@ import {
   numbersDefault,
   textDefault,
 } from './form-model-domain-model.service';
-
-function withFormState<T>(formCall: Observable<T>, defaultFormModel: T) {
-  return signalStoreFeature(
-    withResource(
-      () => ({
-        form: rxResource({
-          stream: () => formCall,
-          defaultValue: defaultFormModel,
-        }),
-      }),
-      { errorHandling: 'previous value' },
-    ),
-    withMethods((store) => ({
-      mapFormState: () => store.formValue(),
-      setFormState: (formValue: T) =>
-        updateState(store, 'set Form State', { formValue: formValue }),
-    })),
-  );
-}
+import { withFormState } from '../withFormState.store.feature';
 
 export const Store = signalStore(
   { providedIn: 'root' },
@@ -65,8 +47,8 @@ export const Store = signalStore(
     }),
     { errorHandling: 'previous value' },
   ),
-  withMethods((store) => ({
-    setFieldType(): void {
+  withMethods((store) => {
+    function setFieldType(): void {
       const selectedDbField = store
         .dbFieldsValue()
         ?.find((field) => field.id === store.formValue().dbField);
@@ -81,6 +63,10 @@ export const Store = signalStore(
           },
         });
       }
-    },
-  })),
+    }
+
+    return {
+      setFieldType,
+    };
+  }),
 );

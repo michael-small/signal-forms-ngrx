@@ -29,7 +29,7 @@ export type TableField = {
 export type DomainModel = {
   databaseTable: string;
   databaseField: TableField['id'];
-  fieldType: TableField['type'] | '';
+  fieldType: TableField['type'] | ''; // TODO - realistically this is not on the server but done at runtime
   numbers: QueryArguments<NumberComparator | '', number>;
   text: QueryArguments<TextComparator | '', string>;
 };
