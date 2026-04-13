@@ -34,7 +34,7 @@ const defaultFormModel: FormModel = {
   text: textDefault,
 };
 
-function withFormState(formCall: Observable<FormModel>) {
+function withFormState<T>(formCall: Observable<T>, defaultFormModel: T) {
   return signalStoreFeature(
     withResource(
       () => ({
@@ -49,7 +49,7 @@ function withFormState(formCall: Observable<FormModel>) {
       mapFormState: () => {
         return store.formValue();
       },
-      setFormState: (val: FormModel) => updateState(store, 'set Form State', { formValue: val }),
+      setFormState: (val: T) => updateState(store, 'set Form State', { formValue: val }),
     })),
   );
 }
@@ -60,7 +60,7 @@ export const Store = signalStore(
     _dataService: inject(EntityDataService),
   })),
   withDevtools('ConditionalResetFormStore'),
-  withFeature((store) => withFormState(store._dataService.getFormData())),
+  withFeature((store) => withFormState(store._dataService.getFormData(), defaultFormModel)),
   withResource(
     (store) => ({
       dbTables: rxResource({
