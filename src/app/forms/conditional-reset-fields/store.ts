@@ -63,19 +63,6 @@ export const Store = signalStore(
   withFeature((store) => withFormState(store._dataService.getFormData())),
   withResource(
     (store) => ({
-      form: rxResource({
-        stream: () => store._dataService.getFormData(),
-        defaultValue: defaultFormModel,
-      }),
-    }),
-    { errorHandling: 'previous value' },
-  ),
-  withMethods((store) => ({
-    mapFormState: () => ({ ...store.formValue() }),
-    setFormState: (val: FormModel) => updateState(store, 'set Form State', { formValue: val }),
-  })),
-  withResource(
-    (store) => ({
       dbTables: rxResource({
         stream: () => store._dataService.getDbTables(),
         defaultValue: [],
