@@ -1,15 +1,9 @@
-import {
-  signalStore,
-  signalStoreFeature,
-  withFeature,
-  withMethods,
-  withProps,
-} from '@ngrx/signals';
+import { signalStore, withFeature, withMethods, withProps } from '@ngrx/signals';
 import { updateState, withDevtools, withResource } from '@angular-architects/ngrx-toolkit';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityDataService } from './entity.service';
 import { inject } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map } from 'rxjs';
 import {
   defaultFormModel,
   FormModelDomainModelService,

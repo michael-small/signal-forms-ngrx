@@ -1,12 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
-import {
-  DomainModel,
-  NumberComparator,
-  QueryArguments,
-  TableField,
-  TextComparator,
-} from './entity.model';
+import { DomainModel, TableField } from './entity.model';
 
 @Injectable({
   providedIn: 'root',
