@@ -33,8 +33,10 @@ const defaultFormModel: FormModel = {
 
 export const Store = signalStore(
   { providedIn: 'root' },
-  withState<FormModel>(() => {
-    return defaultFormModel;
+  withState<{ form: FormModel }>(() => {
+    return {
+      form: defaultFormModel,
+    };
   }),
   withProps(() => ({
     _dataService: inject(EntityDataService),
@@ -47,7 +49,7 @@ export const Store = signalStore(
         defaultValue: [],
       }),
       dbFields: rxResource({
-        params: () => store.dbTable(),
+        params: () => store.form().dbTable,
         stream: (source) => store._dataService.getTableFields(source.params),
         defaultValue: [],
       }),
@@ -56,26 +58,26 @@ export const Store = signalStore(
   ),
   withMethods((store) => ({
     mapFormState(): FormModel {
-      const state = getState(store);
       return {
-        dbTable: state.dbTable,
-        dbField: state.dbField,
-        fieldType: state.fieldType,
-        numbers: state.numbers,
-        text: state.text,
+        ...store.form(),
       };
     },
     setFormState(val: FormModel): void {
-      updateState(store, 'set Form State', val);
+      updateState(store, 'set Form State', { form: val });
     },
     setFieldType(): void {
-      const selectedDbField = store.dbFieldsValue()?.find((field) => field.id === store.dbField());
+      const selectedDbField = store
+        .dbFieldsValue()
+        ?.find((field) => field.id === store.form().dbField);
 
       if (selectedDbField) {
         updateState(store, 'set Field Type', {
-          fieldType: selectedDbField.type,
-          numbers: selectedDbField.type === 'number' ? store.numbers() : numbersDefault,
-          text: selectedDbField.type === 'text' ? store.text() : textDefault,
+          form: {
+            ...store.form(),
+            fieldType: selectedDbField.type,
+            numbers: selectedDbField.type === 'number' ? store.form.numbers() : numbersDefault,
+            text: selectedDbField.type === 'text' ? store.form.text() : textDefault,
+          },
         });
       }
     },
