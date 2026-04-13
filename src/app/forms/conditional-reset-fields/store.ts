@@ -2,7 +2,9 @@ import {
   getState,
   patchState,
   signalStore,
+  signalStoreFeature,
   withComputed,
+  withFeature,
   withMethods,
   withProps,
   withState,
@@ -13,6 +15,7 @@ import { FormModel } from './conditional-reset';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityDataService } from './entity.service';
 import { inject } from '@angular/core';
+import { Observable } from 'rxjs';
 
 export const numbersDefault: QueryArguments<NumberComparator | '', number> = {
   comparator: '',
@@ -31,13 +34,33 @@ const defaultFormModel: FormModel = {
   text: textDefault,
 };
 
+function withFormState(formCall: Observable<FormModel>) {
+  return signalStoreFeature(
+    withResource(
+      () => ({
+        form: rxResource({
+          stream: () => formCall,
+          defaultValue: defaultFormModel,
+        }),
+      }),
+      { errorHandling: 'previous value' },
+    ),
+    withMethods((store) => ({
+      mapFormState: () => {
+        return store.formValue();
+      },
+      setFormState: (val: FormModel) => updateState(store, 'set Form State', { formValue: val }),
+    })),
+  );
+}
+
 export const Store = signalStore(
   { providedIn: 'root' },
   withProps(() => ({
     _dataService: inject(EntityDataService),
   })),
   withDevtools('ConditionalResetFormStore'),
-  // TODO - make into feature
+  withFeature((store) => withFormState(store._dataService.getFormData())),
   withResource(
     (store) => ({
       form: rxResource({
