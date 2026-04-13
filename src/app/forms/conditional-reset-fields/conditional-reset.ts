@@ -1,35 +1,10 @@
 import { JsonPipe } from '@angular/common';
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { form, FormField, FormRoot, hidden, min, readonly, required } from '@angular/forms/signals';
-import {
-  DomainModel,
-  NumberComparator,
-  numberComparators,
-  QueryArguments,
-  TableField,
-  TextComparator,
-  textComparators,
-} from './entity.model';
-import { numbersDefault, Store, textDefault } from './store';
+import { numberComparators, textComparators } from './entity.model';
+import { Store } from './store';
 import { projectedSignal } from '../../prototypes/delegatedSignal-Kobi-Hari-prototype/lib/projected-signal';
-
-export type FormModel = {
-  dbTable: string;
-  dbField: TableField['id'];
-  fieldType: TableField['type'] | '';
-  numbers: QueryArguments<NumberComparator | '', number>;
-  text: QueryArguments<TextComparator | '', string>;
-};
-
-export function mapDomainToFormModel(domain: DomainModel): FormModel {
-  return {
-    dbTable: domain.databaseTable,
-    dbField: domain.databaseField,
-    fieldType: domain.fieldType,
-    numbers: domain.numbers,
-    text: domain.text,
-  };
-}
+import { FormModel } from './form-model-domain-model.service';
 
 @Component({
   selector: 'app-conditional-reset',
