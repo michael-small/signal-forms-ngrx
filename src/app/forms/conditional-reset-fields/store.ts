@@ -11,11 +11,11 @@ import {
 } from '@ngrx/signals';
 import { NumberComparator, QueryArguments, TextComparator } from './entity.model';
 import { updateState, withDevtools, withResource } from '@angular-architects/ngrx-toolkit';
-import { FormModel } from './conditional-reset';
+import { FormModel, mapDomainToFormModel } from './conditional-reset';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityDataService } from './entity.service';
 import { inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 export const numbersDefault: QueryArguments<NumberComparator | '', number> = {
   comparator: '',
@@ -46,10 +46,9 @@ function withFormState<T>(formCall: Observable<T>, defaultFormModel: T) {
       { errorHandling: 'previous value' },
     ),
     withMethods((store) => ({
-      mapFormState: () => {
-        return store.formValue();
-      },
-      setFormState: (val: T) => updateState(store, 'set Form State', { formValue: val }),
+      mapFormState: () => store.formValue(),
+      setFormState: (formValue: T) =>
+        updateState(store, 'set Form State', { formValue: formValue }),
     })),
   );
 }
@@ -60,7 +59,12 @@ export const Store = signalStore(
     _dataService: inject(EntityDataService),
   })),
   withDevtools('ConditionalResetFormStore'),
-  withFeature((store) => withFormState(store._dataService.getFormData(), defaultFormModel)),
+  withFeature((store) =>
+    withFormState(
+      store._dataService.getFormData().pipe(map((domain) => mapDomainToFormModel(domain))),
+      defaultFormModel,
+    ),
+  ),
   withResource(
     (store) => ({
       dbTables: rxResource({

@@ -27,8 +27,9 @@ export type TableField = {
 };
 
 export type DomainModel = {
-  dbTable: string;
-  dbField: TableField['id'];
-  comparator: string;
-  value: string | number;
+  databaseTable: string;
+  databaseField: TableField['id'];
+  fieldType: TableField['type'] | '';
+  numbers: QueryArguments<NumberComparator | '', number>;
+  text: QueryArguments<TextComparator | '', string>;
 };
