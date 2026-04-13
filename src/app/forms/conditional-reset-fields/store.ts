@@ -33,15 +33,24 @@ const defaultFormModel: FormModel = {
 
 export const Store = signalStore(
   { providedIn: 'root' },
-  withState<{ form: FormModel }>(() => {
-    return {
-      form: defaultFormModel,
-    };
-  }),
   withProps(() => ({
     _dataService: inject(EntityDataService),
   })),
   withDevtools('ConditionalResetFormStore'),
+  // TODO - make into feature
+  withResource(
+    (store) => ({
+      form: rxResource({
+        stream: () => store._dataService.getFormData(),
+        defaultValue: defaultFormModel,
+      }),
+    }),
+    { errorHandling: 'previous value' },
+  ),
+  withMethods((store) => ({
+    mapFormState: () => ({ ...store.formValue() }),
+    setFormState: (val: FormModel) => updateState(store, 'set Form State', { formValue: val }),
+  })),
   withResource(
     (store) => ({
       dbTables: rxResource({
@@ -49,7 +58,7 @@ export const Store = signalStore(
         defaultValue: [],
       }),
       dbFields: rxResource({
-        params: () => store.form().dbTable,
+        params: () => store.formValue().dbTable,
         stream: (source) => store._dataService.getTableFields(source.params),
         defaultValue: [],
       }),
@@ -57,20 +66,18 @@ export const Store = signalStore(
     { errorHandling: 'previous value' },
   ),
   withMethods((store) => ({
-    mapFormState: () => ({ ...store.form() }),
-    setFormState: (val: FormModel) => updateState(store, 'set Form State', { form: val }),
     setFieldType(): void {
       const selectedDbField = store
         .dbFieldsValue()
-        ?.find((field) => field.id === store.form().dbField);
+        ?.find((field) => field.id === store.formValue().dbField);
 
       if (selectedDbField) {
         updateState(store, 'set Field Type', {
-          form: {
-            ...store.form(),
+          formValue: {
+            ...store.formValue(),
             fieldType: selectedDbField.type,
-            numbers: selectedDbField.type === 'number' ? store.form.numbers() : numbersDefault,
-            text: selectedDbField.type === 'text' ? store.form.text() : textDefault,
+            numbers: selectedDbField.type === 'number' ? store.formValue().numbers : numbersDefault,
+            text: selectedDbField.type === 'text' ? store.formValue().text : textDefault,
           },
         });
       }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { TableField } from './entity.model';
+import { FormModel } from './conditional-reset';
 
 @Injectable({
   providedIn: 'root',
@@ -33,5 +34,21 @@ export class EntityDataService {
       fields = [];
     }
     return of(fields).pipe(delay(1000));
+  }
+
+  public getFormData(): Observable<FormModel> {
+    return of<FormModel>({
+      dbTable: 'users',
+      dbField: 'name',
+      fieldType: 'text',
+      numbers: {
+        comparator: '',
+        value: 0,
+      },
+      text: {
+        comparator: 'equals',
+        value: 'test',
+      },
+    }).pipe(delay(1000));
   }
 }
