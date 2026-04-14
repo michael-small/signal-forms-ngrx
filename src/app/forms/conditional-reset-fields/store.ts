@@ -20,12 +20,11 @@ export const Store = signalStore(
   })),
   withDevtools('ConditionalResetFormStore'),
   withFeature((store) =>
-    withFormState(
-      store._dataService
-        .getFormData()
-        .pipe(map((domain) => store._formModelDomainModelService.mapDomainToFormModel(domain))),
-      defaultFormModel,
-    ),
+    withFormState({
+      formDataStream: store._dataService.getFormData(),
+      defaultFormModel: defaultFormModel,
+      mappingFn: (domain) => store._formModelDomainModelService.mapDomainToFormModel(domain),
+    }),
   ),
   withResource(
     (store) => ({
