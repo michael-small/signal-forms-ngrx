@@ -3,6 +3,14 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { signalStoreFeature, withMethods } from '@ngrx/signals';
 import { map, Observable } from 'rxjs';
 
+/**
+ * @description RxJS first feature for:
+ * - Syncing form data
+ * - Handing default value
+ * - Domain to form mapping
+ *
+ * Perhaps it could also prescribe form submission handling
+ */
 export function withFormState<DomainModel, FormModel>(args: {
   formDataStream: Observable<DomainModel>;
   defaultFormModel: FormModel;

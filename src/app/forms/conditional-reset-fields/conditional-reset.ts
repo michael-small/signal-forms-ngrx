@@ -15,6 +15,17 @@ import { Store } from './store';
 import { projectedSignal } from '../../prototypes/delegatedSignal-Kobi-Hari-prototype/lib/projected-signal';
 import { FormModel } from './form-model-domain-model.service';
 
+/**
+ * @description The `fieldType` is what determins the relevant fields to require
+ * Note: in signal forms, `hidden` is for fields not shown in the form, and for saying that
+ * a field is not relevant for validation. `hidden` is NOT neccisarily meaning not shown in the UI,
+ * but in practice with this example, it could be used like that.
+ *
+ * Rather than overloading `comparator` and `value` with union of all possible types,
+ * each `fieldType` has its own specific comparator + value fields.
+ *
+ * @see {@link} https://angular.dev/guide/forms/signals/form-logic#choose-between-hidden-disabled-and-readonly
+ */
 function querySchema(schema: SchemaPathTree<FormModel>) {
   readonly(schema.fieldType);
 
@@ -95,6 +106,12 @@ export class ConditionalReset {
   protected readonly numberComparators = numberComparators;
   protected readonly textComparators = textComparators;
 
+  /**
+   * @description The projected signal is what connects the form state to the store.
+   * It takes care of
+   * - Projecting the store state to the form (computation)
+   * - Updating the store on form changes (update)
+   */
   protected projected = projectedSignal({
     computation: () => this.store.mapFormState(),
     update: (value) => this.store.setFormState(value),
@@ -103,11 +120,21 @@ export class ConditionalReset {
   protected form = form<FormModel>(
     this.projected,
     (schema) => {
+      // The schema could all be done inline,
+      // but this function allows cleaner declaration and possible re-use
       return querySchema(schema);
     },
     {
       submission: {
         action: async () => {
+          // Error handling on save can differ a lot from app to app.
+          // In my everyday use, we tend to handle errors as side effects directly in the call
+          // to have clear spinner blocker and feedback via a snackbar.
+          // For other workflows, consider handling errors by this submit,
+          // returning a form submission error which can be shown in the UI.
+          //
+          // Docs on form submission currently being reviewed:
+          // https://github.com/angular/angular/pull/67862
           await this.store.save();
         },
       },

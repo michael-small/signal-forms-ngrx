@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { DomainModel, TableField } from './entity.model';
 
+/**
+ * @description In a normal app, this would not be located in the same folder
+ */
 @Injectable({
   providedIn: 'root',
 })
