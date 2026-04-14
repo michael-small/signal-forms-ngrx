@@ -8,12 +8,9 @@ import {
   min,
   readonly,
   required,
-  SchemaPath,
   SchemaPathTree,
-  submit,
-  TreeValidationResult,
 } from '@angular/forms/signals';
-import { DomainModel, numberComparators, textComparators } from './entity.model';
+import { numberComparators, textComparators } from './entity.model';
 import { Store } from './store';
 import { projectedSignal } from '../../prototypes/delegatedSignal-Kobi-Hari-prototype/lib/projected-signal';
 import { FormModel } from './form-model-domain-model.service';

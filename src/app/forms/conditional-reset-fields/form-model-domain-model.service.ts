@@ -46,7 +46,6 @@ export class FormModelDomainModelService {
     };
   }
 
-  // TODO - handle save mapping in store
   public mapFormModelToDomain(formModel: FormModel): DomainModel {
     return {
       databaseTable: formModel.dbTable,

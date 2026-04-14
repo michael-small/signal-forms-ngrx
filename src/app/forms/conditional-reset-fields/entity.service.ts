@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, delay, Observable, of, switchMap, throwError } from 'rxjs';
+import { delay, Observable, of } from 'rxjs';
 import { DomainModel, TableField } from './entity.model';
 
 @Injectable({

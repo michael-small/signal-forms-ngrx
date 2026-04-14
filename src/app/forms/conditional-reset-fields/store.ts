@@ -3,7 +3,7 @@ import { updateState, withDevtools, withResource } from '@angular-architects/ngr
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityDataService } from './entity.service';
 import { inject } from '@angular/core';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import {
   defaultFormModel,
   FormModelDomainModelService,
