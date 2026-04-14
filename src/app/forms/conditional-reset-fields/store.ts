@@ -3,7 +3,7 @@ import { updateState, withDevtools, withResource } from '@angular-architects/ngr
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityDataService } from './entity.service';
 import { inject } from '@angular/core';
-import { map } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import {
   defaultFormModel,
   FormModelDomainModelService,
@@ -58,8 +58,15 @@ export const Store = signalStore(
       }
     }
 
+    function save() {
+      const formData = store.formValue();
+      const domainModel = store._formModelDomainModelService.mapFormModelToDomain(formData);
+      return firstValueFrom(store._dataService.save(domainModel));
+    }
+
     return {
       setFieldType,
+      save,
     };
   }),
 );

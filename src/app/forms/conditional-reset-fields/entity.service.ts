@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { delay, Observable, of } from 'rxjs';
+import { catchError, delay, Observable, of, switchMap, throwError } from 'rxjs';
 import { DomainModel, TableField } from './entity.model';
 
 @Injectable({
@@ -49,5 +49,9 @@ export class EntityDataService {
         value: 'test',
       },
     }).pipe(delay(1000));
+  }
+
+  public save(data: DomainModel) {
+    return of(data).pipe(delay(500));
   }
 }

@@ -1,7 +1,17 @@
 import { JsonPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { form, FormField, FormRoot, hidden, min, readonly, required } from '@angular/forms/signals';
-import { numberComparators, textComparators } from './entity.model';
+import {
+  form,
+  FormField,
+  FormRoot,
+  hidden,
+  min,
+  readonly,
+  required,
+  submit,
+  TreeValidationResult,
+} from '@angular/forms/signals';
+import { DomainModel, numberComparators, textComparators } from './entity.model';
 import { Store } from './store';
 import { projectedSignal } from '../../prototypes/delegatedSignal-Kobi-Hari-prototype/lib/projected-signal';
 import { FormModel } from './form-model-domain-model.service';
@@ -76,18 +86,28 @@ export class ConditionalReset {
     update: (value) => this.store.setFormState(value),
   });
 
-  protected form = form<FormModel>(this.projected, (schema) => {
-    readonly(schema.fieldType);
+  protected form = form<FormModel>(
+    this.projected,
+    (schema) => {
+      readonly(schema.fieldType);
 
-    required(schema.dbTable, { message: 'DB Table is required' });
-    required(schema.dbField, { message: 'DB Field is required' });
+      required(schema.dbTable, { message: 'DB Table is required' });
+      required(schema.dbField, { message: 'DB Field is required' });
 
-    hidden(schema.numbers, ({ valueOf }) => valueOf(schema.fieldType) !== 'number');
-    required(schema.numbers.comparator, { message: 'Number Comparator is required' });
-    min(schema.numbers.value, 0);
+      hidden(schema.numbers, ({ valueOf }) => valueOf(schema.fieldType) !== 'number');
+      required(schema.numbers.comparator, { message: 'Number Comparator is required' });
+      min(schema.numbers.value, 0);
 
-    hidden(schema.text, ({ valueOf }) => valueOf(schema.fieldType) !== 'text');
-    required(schema.text.comparator, { message: 'Text Comparator is required' });
-    required(schema.text.value, { message: 'Text Value is required' });
-  });
+      hidden(schema.text, ({ valueOf }) => valueOf(schema.fieldType) !== 'text');
+      required(schema.text.comparator, { message: 'Text Comparator is required' });
+      required(schema.text.value, { message: 'Text Value is required' });
+    },
+    {
+      submission: {
+        action: async () => {
+          await this.store.save();
+        },
+      },
+    },
+  );
 }
