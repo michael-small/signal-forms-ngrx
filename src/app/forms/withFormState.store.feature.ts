@@ -1,6 +1,6 @@
 import { updateState, withResource } from '@angular-architects/ngrx-toolkit';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { signalStoreFeature, withMethods } from '@ngrx/signals';
+import { signalStoreFeature, withHooks, withMethods } from '@ngrx/signals';
 import { map, Observable } from 'rxjs';
 
 /**
@@ -31,5 +31,23 @@ export function withFormState<DomainModel, FormModel>(args: {
       setFormState: (formValue: FormModel) =>
         updateState(store, 'set Form State', { formValue: formValue }),
     })),
+  );
+}
+
+type MethodDictionary = Record<string, (...args: any[]) => void>;
+
+export function withFormStateImperativeHandlers<DomainModel, FormModel>(methods: MethodDictionary) {
+  return signalStoreFeature(
+    withMethods((store) => ({
+      ...methods,
+    })),
+    withHooks({
+      onInit(store) {
+        const mtds = Object.entries(methods);
+        mtds.forEach(([name, fn]) => {
+          fn();
+        });
+      },
+    }),
   );
 }
