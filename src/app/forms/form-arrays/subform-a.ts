@@ -1,20 +1,18 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { FormService } from './form.service';
 import { FormField } from '@angular/forms/signals';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-subform-a',
-  imports: [FormField],
+  imports: [FormField, MatRadioModule],
   template: `
     @let form = this.form();
 
-    <div>
-      <input type="radio" id="A" value="A" [formField]="form.type" />
-      <label for="A">A</label>
-
-      <input type="radio" id="B" value="B" [formField]="form.type" />
-      <label for="B">B</label>
-    </div>
+    <mat-radio-group aria-label="Select an option" [formField]="form.type">
+      <mat-radio-button value="A">A</mat-radio-button>
+      <mat-radio-button value="B">B</mat-radio-button>
+    </mat-radio-group>
 
     <label>
       Subform A:
