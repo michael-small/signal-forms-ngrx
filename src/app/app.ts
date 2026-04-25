@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { Links } from './links';
 import { BillPay } from './forms/bill-pay';
 import { ConditionalReset } from './forms/conditional-reset-fields/conditional-reset';
+import { FormArrays } from './forms/form-arrays/form-arrays';
 
 @Component({
   selector: 'app-root',
-  imports: [Links, BillPay, ConditionalReset],
+  imports: [Links, BillPay, ConditionalReset, FormArrays],
   template: `
     <h1>Signal Forms + NgRx + NgRx Toolkit</h1>
 
@@ -27,6 +28,10 @@ import { ConditionalReset } from './forms/conditional-reset-fields/conditional-r
       NgRx itself? I (Michael Small) am not sure and cannot speak for the NgRx team. But I am
       experimenting.
     </p>
+
+    <h2>Form Arrays</h2>
+
+    <app-form-arrays />
 
     <h2>Conditional Reset Fields Form</h2>
 
