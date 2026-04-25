@@ -28,16 +28,11 @@ import { Component } from '@angular/core';
         Proposed APIs from NgRx
         <ul>
           <li>
-            delegatedSignal (projectedSignal prototype used at the moment)
+            delegatedSignal
             <ul>
               <li>
                 <a href="https://github.com/ngrx/platform/issues/5121" target="_blank"
                   >RFC(@ngrx/signals): Add delegatedSignal API</a
-                >
-              </li>
-              <li>
-                <a href="https://github.com/kobi2294/fun-with-projected-signals" target="_blank"
-                  >Kobi Hari's projected signal prototype</a
                 >
               </li>
             </ul>

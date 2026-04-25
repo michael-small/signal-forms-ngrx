@@ -26,7 +26,7 @@ import { withFormState, withFormStateImperativeHandlers } from '../withFormState
  * This store is just concerned with the form state and connecting the form layer and data layer
  * on init and save.
  *
- * In conjunction with the prototype of the `projectedSignal` (see form UI file),
+ * In conjunction with the prototype of the `delegatedSignal` (see form UI file),
  * the form state is projected for the form and updates the store on form change.
  */
 export const Store = signalStore(
