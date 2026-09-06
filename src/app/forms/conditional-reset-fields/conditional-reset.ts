@@ -12,7 +12,7 @@ import {
 } from '@angular/forms/signals';
 import { numberComparators, textComparators } from './entity.model';
 import { Store } from './store';
-import { FormModel } from './form-model-domain-model.service';
+import { FormModel, numbersDefault, textDefault } from './form-model-domain-model.service';
 
 /**
  * @description The `fieldType` is what determins the relevant fields to require
@@ -60,7 +60,7 @@ function querySchema(schema: SchemaPathTree<FormModel>) {
 
       <label>
         DB Field
-        <select [formField]="form.dbField" (change)="store.setFieldType()">
+        <select [formField]="form.dbField">
           @for (field of store.dbFieldsValue(); track $index) {
             <option [value]="field.id">{{ field.name }}</option>
           }
@@ -117,7 +117,10 @@ export class ConditionalReset {
    * - Updating the store on form changes (set)
    */
   protected delegated = linkedSignal(() => this.store.mapFormState(), {
-    set: (value) => this.store.setFormState(value),
+    set: (value) => {
+      const formNewFieldTypesAndResetValues = this.store.setFieldType(value);
+      return this.store.setFormState(formNewFieldTypesAndResetValues);
+    },
   });
 
   protected form = form<FormModel>(

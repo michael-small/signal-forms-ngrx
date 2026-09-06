@@ -6,6 +6,7 @@ import { inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {
   defaultFormModel,
+  FormModel,
   FormModelDomainModelService,
   numbersDefault,
   textDefault,
@@ -51,21 +52,18 @@ export const Store = signalStore(
     { errorHandling: 'previous value' },
   ),
   withMethods((store) => {
-    function setFieldType(): void {
-      const selectedDbField = store
-        .dbFieldsValue()
-        ?.find((field) => field.id === store.formValue().dbField);
+    function setFieldType(value: FormModel): FormModel {
+      const selectedDbField = store.dbFieldsValue()?.find((field) => field.id === value.dbField);
 
-      if (selectedDbField) {
-        updateState(store, 'set Field Type', {
-          formValue: {
-            ...store.formValue(),
-            fieldType: selectedDbField.type,
-            numbers: selectedDbField.type === 'number' ? store.formValue().numbers : numbersDefault,
-            text: selectedDbField.type === 'text' ? store.formValue().text : textDefault,
-          },
-        });
-      }
+      const formValue = selectedDbField
+        ? {
+            ...value,
+            fieldType: selectedDbField?.type,
+            numbers: selectedDbField?.type === 'number' ? value.numbers : numbersDefault,
+            text: selectedDbField?.type === 'text' ? value.text : textDefault,
+          }
+        : value;
+      return formValue;
     }
 
     function save() {
