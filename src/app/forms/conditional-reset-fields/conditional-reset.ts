@@ -69,7 +69,7 @@ function querySchema(schema: SchemaPathTree<FormModel>) {
 
       @if (form().value().fieldType === 'number') {
         <label>
-          Comparator
+          Comparator {{ form.numbers.comparator().touched() }}
           <select [formField]="form.numbers.comparator">
             @for (comparator of numberComparators; track comparator) {
               <option [value]="comparator.value">{{ comparator.label }}</option>
@@ -83,7 +83,7 @@ function querySchema(schema: SchemaPathTree<FormModel>) {
         </label>
       } @else if (form().value().fieldType === 'text') {
         <label>
-          Comparator
+          Comparator {{ form.text.comparator().touched() }}
           <select [formField]="form.text.comparator">
             @for (comparator of textComparators; track comparator) {
               <option [value]="comparator.value">{{ comparator.label }}</option>
@@ -116,15 +116,22 @@ export class ConditionalReset {
    * - Projecting the store state to the form (the computation)
    * - Updating the store on form changes (set)
    */
-  protected delegated = linkedSignal(() => this.store.mapFormState(), {
+  protected formModel = linkedSignal<FormModel>(() => this.store.mapFormState(), {
     set: (value) => {
       const formNewFieldTypesAndResetValues = this.store.setFieldType(value);
-      return this.store.setFormState(formNewFieldTypesAndResetValues);
+
+      this.store.setFormState(formNewFieldTypesAndResetValues.newFormValue);
+
+      if (formNewFieldTypesAndResetValues.fieldToReset === 'numbers') {
+        this.form.numbers().reset(numbersDefault);
+      } else if (formNewFieldTypesAndResetValues.fieldToReset === 'text') {
+        this.form.text().reset(textDefault);
+      }
     },
   });
 
   protected form = form<FormModel>(
-    this.delegated,
+    this.formModel,
     (schema) => {
       // The schema could all be done inline,
       // but this function allows cleaner declaration and possible re-use

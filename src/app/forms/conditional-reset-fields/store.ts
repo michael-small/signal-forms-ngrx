@@ -52,18 +52,37 @@ export const Store = signalStore(
     { errorHandling: 'previous value' },
   ),
   withMethods((store) => {
-    function setFieldType(value: FormModel): FormModel {
-      const selectedDbField = store.dbFieldsValue()?.find((field) => field.id === value.dbField);
+    function setFieldType(value: FormModel): {
+      newFormValue: FormModel;
+      fieldToReset: 'numbers' | 'text' | null;
+    } {
+      const oldDbField = store.formValue().dbField;
+      const newDbField = value.dbField;
 
-      const formValue = selectedDbField
-        ? {
-            ...value,
-            fieldType: selectedDbField?.type,
-            numbers: selectedDbField?.type === 'number' ? value.numbers : numbersDefault,
-            text: selectedDbField?.type === 'text' ? value.text : textDefault,
-          }
-        : value;
-      return formValue;
+      const prevDBField = store.dbFieldsValue()?.find((field) => field.id === oldDbField);
+      const newDBField = store.dbFieldsValue()?.find((field) => field.id === newDbField);
+
+      const newFormValueWithResets =
+        newDBField && newDBField !== prevDBField
+          ? {
+              ...value,
+              fieldType: newDBField?.type,
+              numbers: newDBField?.type === 'number' ? value.numbers : numbersDefault,
+              text: newDBField?.type === 'text' ? value.text : textDefault,
+            }
+          : value;
+
+      let fieldToReset: 'numbers' | 'text' | null = null;
+      if (prevDBField?.type !== newDBField?.type) {
+        fieldToReset = newDBField?.type === 'number' ? 'text' : 'numbers';
+      } else if (prevDBField?.type === newDBField?.type) {
+        fieldToReset = null;
+      }
+
+      return {
+        newFormValue: newFormValueWithResets,
+        fieldToReset: fieldToReset,
+      };
     }
 
     function save() {
