@@ -11,7 +11,7 @@
   "private": true,
   "packageManager": "npm@10.9.4",
   "dependencies": {
-    "@angular-architects/ngrx-toolkit": "^21.0.1",
+    "@ngrx-toolkit/core": "^22.0.1",
     "@angular/aria": "^22.0.0",
     "@angular/material": "^22.0.0",
     "@angular/cdk": "^22.0.0",
@@ -21,7 +21,7 @@
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
-    "@ngrx/signals": "^21.1.0",
+    "@ngrx/signals": "^22.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -33,15 +33,5 @@
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
     "vitest": "^4.0.8"
-  },
-  "overrides": {
-    "@angular-architects/ngrx-toolkit": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core"
-    },
-    "@ngrx/signals": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core"
-    }
   }
 }
