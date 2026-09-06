@@ -1,10 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, linkedSignal } from '@angular/core';
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
 import { HttpClient } from '@angular/common/http';
 import { rxMutation, withResource } from '@ngrx-toolkit/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
-import { delegatedSignal } from '../../prototypes/delegatedSignal/delegated-signal';
 import { map } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -123,9 +122,8 @@ const TodoStore = signalStore(
 export class FullCRUD {
   readonly #todoStore = inject(TodoStore);
 
-  readonly #todos = delegatedSignal({
-    source: this.#todoStore.todosValue,
-    update: (todos) => this.#todoStore.patchTodos(todos),
+  readonly #todos = linkedSignal(() => this.#todoStore.todosValue(), {
+    set: (todos) => this.#todoStore.patchTodos(todos),
   });
 
   protected form = form(this.#todos);

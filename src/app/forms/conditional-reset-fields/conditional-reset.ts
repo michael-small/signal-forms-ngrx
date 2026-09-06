@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, linkedSignal } from '@angular/core';
 import {
   form,
   FormField,
@@ -13,7 +13,6 @@ import {
 import { numberComparators, textComparators } from './entity.model';
 import { Store } from './store';
 import { FormModel } from './form-model-domain-model.service';
-import { delegatedSignal } from '../../prototypes/delegatedSignal/delegated-signal';
 
 /**
  * @description The `fieldType` is what determins the relevant fields to require
@@ -112,14 +111,13 @@ export class ConditionalReset {
   protected readonly textComparators = textComparators;
 
   /**
-   * @description The delegated signal is what connects the form state to the store.
+   * @description Connects the form state to the store.
    * It takes care of
-   * - Projecting the store state to the form (computation)
-   * - Updating the store on form changes (update)
+   * - Projecting the store state to the form (the computation)
+   * - Updating the store on form changes (set)
    */
-  protected delegated = delegatedSignal({
-    source: () => this.store.mapFormState(),
-    update: (value) => this.store.setFormState(value),
+  protected delegated = linkedSignal(() => this.store.mapFormState(), {
+    set: (value) => this.store.setFormState(value),
   });
 
   protected form = form<FormModel>(
