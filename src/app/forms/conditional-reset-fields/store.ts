@@ -1,5 +1,5 @@
 import { signalStore, withFeature, withMethods, withProps } from '@ngrx/signals';
-import { updateState, withDevtools, withResource } from '@angular-architects/ngrx-toolkit';
+import { updateState, withDevtools, withResource } from '@ngrx-toolkit/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityDataService } from './entity.service';
 import { inject } from '@angular/core';

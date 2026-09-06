@@ -1,4 +1,4 @@
-import { updateState, withResource } from '@angular-architects/ngrx-toolkit';
+import { updateState, withResource } from '@ngrx-toolkit/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { signalStoreFeature, withComputed, withHooks, withMethods } from '@ngrx/signals';
 import { map, Observable } from 'rxjs';

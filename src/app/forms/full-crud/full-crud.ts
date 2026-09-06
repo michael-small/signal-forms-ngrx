@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
 import { HttpClient } from '@angular/common/http';
-import { rxMutation, withResource } from '@angular-architects/ngrx-toolkit';
+import { rxMutation, withResource } from '@ngrx-toolkit/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { delegatedSignal } from '../../prototypes/delegatedSignal/delegated-signal';
