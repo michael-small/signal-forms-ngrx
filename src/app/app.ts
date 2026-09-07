@@ -19,9 +19,6 @@ import { MaterialModernize } from './forms/material-modernize/material-modernize
   template: `
     <h1>Signal Forms Playground</h1>
 
-    <h2>Material Modernize examples</h2>
-    <app-material-modernize />
-
     <p>
       <a href="https://angular.dev/guide/forms/signals/overview" target="_blank">Signal Forms</a>
       documentation
@@ -45,6 +42,9 @@ import { MaterialModernize } from './forms/material-modernize/material-modernize
     <app-complex-topics />
 
     <app-large-form-splitting-strategies />
+
+    <h2>Material Modernize examples</h2>
+    <app-material-modernize />
   `,
   styles: `
     #info {
