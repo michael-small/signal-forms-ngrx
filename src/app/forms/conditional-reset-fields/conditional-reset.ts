@@ -69,7 +69,7 @@ function querySchema(schema: SchemaPathTree<FormModel>) {
 
       @if (form().value().fieldType === 'number') {
         <label>
-          Comparator {{ form.numbers.comparator().touched() }}
+          Comparator
           <select [formField]="form.numbers.comparator">
             @for (comparator of numberComparators; track comparator) {
               <option [value]="comparator.value">{{ comparator.label }}</option>
@@ -83,7 +83,7 @@ function querySchema(schema: SchemaPathTree<FormModel>) {
         </label>
       } @else if (form().value().fieldType === 'text') {
         <label>
-          Comparator {{ form.text.comparator().touched() }}
+          Comparator
           <select [formField]="form.text.comparator">
             @for (comparator of textComparators; track comparator) {
               <option [value]="comparator.value">{{ comparator.label }}</option>
@@ -118,15 +118,11 @@ export class ConditionalReset {
    */
   protected formModel = linkedSignal<FormModel>(() => this.store.mapFormState(), {
     set: (value) => {
-      const formNewFieldTypesAndResetValues = this.store.setFieldType(value);
+      const { newFormValue, fieldToReset } = this.store.setFieldType(value);
 
-      this.store.setFormState(formNewFieldTypesAndResetValues.newFormValue);
+      this.store.setFormState(newFormValue);
 
-      if (formNewFieldTypesAndResetValues.fieldToReset === 'numbers') {
-        this.form.numbers().reset(numbersDefault);
-      } else if (formNewFieldTypesAndResetValues.fieldToReset === 'text') {
-        this.form.text().reset(textDefault);
-      }
+      this.resetFormFields(fieldToReset);
     },
   });
 
@@ -153,4 +149,12 @@ export class ConditionalReset {
       },
     },
   );
+
+  private resetFormFields(fieldsToReset: 'numbers' | 'text' | null) {
+    if (fieldsToReset === 'numbers') {
+      this.form.numbers().reset(numbersDefault);
+    } else if (fieldsToReset === 'text') {
+      this.form.text().reset(textDefault);
+    }
+  }
 }
