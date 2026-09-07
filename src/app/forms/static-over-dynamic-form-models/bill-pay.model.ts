@@ -1,45 +1,42 @@
 // https://angular.dev/guide/forms/signals/model-design#domain-model-to-form-model
 // TL;DR Domain models are not always the same as form models.
 
-import { Inject, Injectable } from '@angular/core';
-
+// Normally would be in its own file, but easier to compare here
 export interface BillPayDomainModel {
   name: string;
   method: {
     type: string;
     card: {
-      card: string;
+      card: string; // different
       securityCode: string;
       expiration: string;
     };
     bank: {
-      account: string;
-      routing: string;
+      account: string; // different
+      routing: string; // different
     };
   };
 }
 
+// Normally would be in its own file, but easier to compare here
 export interface BillPayFormModel {
   name: string;
   method: {
     type: string;
     card: {
-      cardNumber: string;
+      cardNumber: string; // different
       securityCode: string;
       expiration: string;
     };
     bank: {
-      accountNumber: string;
-      routingNumber: string;
+      accountNumber: string; // different
+      routingNumber: string; // different
     };
   };
 }
 
-@Injectable({
-  providedIn: 'root',
-})
 export class DomainAndFormMappings {
-  public mapDomainToForm(domainModel: BillPayDomainModel): BillPayFormModel {
+  public static mapDomainToForm(domainModel: BillPayDomainModel): BillPayFormModel {
     return {
       name: domainModel?.name ?? '',
       method: {
@@ -57,7 +54,7 @@ export class DomainAndFormMappings {
     };
   }
 
-  public mapFormToDomain(formModel: BillPayFormModel): BillPayDomainModel {
+  public static mapFormToDomain(formModel: BillPayFormModel): BillPayDomainModel {
     return {
       name: formModel?.name ?? '',
       method: {

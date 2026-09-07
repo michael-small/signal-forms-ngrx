@@ -9,11 +9,8 @@ import {
   schema,
   TreeValidationResult,
 } from '@angular/forms/signals';
-import {
-  BillPayFormModel,
-  DomainAndFormMappings,
-} from '../bill-pay-dynamic-validation-modeling/bill-pay.model';
-import { BillPayService } from '../bill-pay-dynamic-validation-modeling/bill-pay.service';
+import { BillPayFormModel, DomainAndFormMappings } from './bill-pay.model';
+import { BillPayService } from './bill-pay.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 const defaultFormModel: BillPayFormModel = {
@@ -70,7 +67,6 @@ const billPaySchema = schema<BillPayFormModel>((billPay) => {
 })
 export class StaticOverDynamicFormModels {
   readonly #billPayService = inject(BillPayService);
-  readonly #domainToFormMappings = inject(DomainAndFormMappings);
 
   protected throwError = signal(false); // for forcing error
 
@@ -84,9 +80,7 @@ export class StaticOverDynamicFormModels {
   private billModel = linkedSignal({
     source: this.billResource.value,
     computation: (domainModel) => {
-      return domainModel
-        ? this.#domainToFormMappings.mapDomainToForm(domainModel)
-        : defaultFormModel;
+      return domainModel ? DomainAndFormMappings.mapDomainToForm(domainModel) : defaultFormModel;
     },
   });
 
@@ -98,7 +92,7 @@ export class StaticOverDynamicFormModels {
         // 1) Helper function for this
         // 2) HTML:<button (click)="onSave()"> with TS: `async onSave() { ... }`
         const result: TreeValidationResult<any> = await this.#billPayService.saveBillingInfo(
-          this.#domainToFormMappings.mapFormToDomain(field().value()),
+          DomainAndFormMappings.mapFormToDomain(field().value()),
           this.throwError(),
         );
 
