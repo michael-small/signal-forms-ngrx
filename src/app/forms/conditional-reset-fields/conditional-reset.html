@@ -1,0 +1,53 @@
+<form [formRoot]="form">
+    <label>
+        DB Table
+        <select [formField]="form.dbTable">
+            @for (table of store.dbTablesValue(); track table.id) {
+            <option [value]="table.id">{{ table.name }}</option>
+            }
+        </select>
+    </label>
+
+    <label>
+        DB Field
+        <select [formField]="form.dbField">
+            @for (field of store.dbFieldsValue(); track $index) {
+            <option [value]="field.id">{{ field.name }}</option>
+            }
+        </select>
+    </label>
+
+    @if (form().value().fieldType === 'number') {
+    <label>
+        Comparator
+        <select [formField]="form.numbers.comparator">
+            @for (comparator of numberComparators; track comparator) {
+            <option [value]="comparator.value">{{ comparator.label }}</option>
+            }
+        </select>
+    </label>
+
+    <label>
+        Value
+        <input type="number" [formField]="form.numbers.value" />
+    </label>
+    } @else if (form().value().fieldType === 'text') {
+    <label>
+        Comparator
+        <select [formField]="form.text.comparator">
+            @for (comparator of textComparators; track comparator) {
+            <option [value]="comparator.value">{{ comparator.label }}</option>
+            }
+        </select>
+    </label>
+
+    <label>
+        Value
+        <input type="text" [formField]="form.text.value" />
+    </label>
+    }
+    <button type="submit" [disabled]="form().invalid()">Submit</button>
+
+    <pre>Form Value: {{ form().value() | json }}</pre>
+    <pre>Form Errors: {{ form().errorSummary() | json }}</pre>
+</form>

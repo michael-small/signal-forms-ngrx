@@ -4,13 +4,8 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityDataService } from './entity.service';
 import { inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import {
-  defaultFormModel,
-  FormModel,
-  FormModelDomainModelService,
-  numbersDefault,
-  textDefault,
-} from './form-model-domain-model.service';
+import { defaultConditionalFormModel, FormModel } from './form.model';
+import { FormToDomain } from './form-to-domain';
 import { withFormState } from '../withFormState.store.feature';
 
 /**
@@ -25,16 +20,14 @@ export const Store = signalStore(
   { providedIn: 'root' },
   withProps(() => ({
     _dataService: inject(EntityDataService),
-    _formModelDomainModelService: inject(FormModelDomainModelService),
   })),
   withDevtools('ConditionalResetFormStore'),
   withFeature((store) =>
     withFormState({
       formDataStream: store._dataService.getFormData(),
-      defaultFormModel: defaultFormModel,
-      mapDomainToFormFn: (domain) =>
-        store._formModelDomainModelService.mapDomainToFormModel(domain),
-      mapFormToDomainFn: (form) => store._formModelDomainModelService.mapFormModelToDomain(form),
+      defaultFormModel: defaultConditionalFormModel,
+      mapDomainToFormFn: (domain) => FormToDomain.mapDomainToFormModel(domain),
+      mapFormToDomainFn: (form) => FormToDomain.mapFormModelToDomain(form),
     }),
   ),
   withResource(
@@ -67,8 +60,9 @@ export const Store = signalStore(
           ? {
               ...value,
               fieldType: newDBField?.type,
-              numbers: newDBField?.type === 'number' ? value.numbers : numbersDefault,
-              text: newDBField?.type === 'text' ? value.text : textDefault,
+              numbers:
+                newDBField?.type === 'number' ? value.numbers : defaultConditionalFormModel.numbers,
+              text: newDBField?.type === 'text' ? value.text : defaultConditionalFormModel.text,
             }
           : value;
 

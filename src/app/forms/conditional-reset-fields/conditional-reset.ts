@@ -12,7 +12,7 @@ import {
 } from '@angular/forms/signals';
 import { numberComparators, textComparators } from './entity.model';
 import { Store } from './store';
-import { FormModel, numbersDefault, textDefault } from './form-model-domain-model.service';
+import { defaultConditionalFormModel, FormModel } from './form.model';
 
 /**
  * @description The `fieldType` is what determins the relevant fields to require
@@ -47,62 +47,7 @@ function querySchema(schema: SchemaPathTree<FormModel>) {
 @Component({
   selector: 'app-conditional-reset',
   imports: [FormRoot, FormField, JsonPipe],
-  template: `
-    <form [formRoot]="form">
-      <label>
-        DB Table
-        <select [formField]="form.dbTable">
-          @for (table of store.dbTablesValue(); track table.id) {
-            <option [value]="table.id">{{ table.name }}</option>
-          }
-        </select>
-      </label>
-
-      <label>
-        DB Field
-        <select [formField]="form.dbField">
-          @for (field of store.dbFieldsValue(); track $index) {
-            <option [value]="field.id">{{ field.name }}</option>
-          }
-        </select>
-      </label>
-
-      @if (form().value().fieldType === 'number') {
-        <label>
-          Comparator
-          <select [formField]="form.numbers.comparator">
-            @for (comparator of numberComparators; track comparator) {
-              <option [value]="comparator.value">{{ comparator.label }}</option>
-            }
-          </select>
-        </label>
-
-        <label>
-          Value
-          <input type="number" [formField]="form.numbers.value" />
-        </label>
-      } @else if (form().value().fieldType === 'text') {
-        <label>
-          Comparator
-          <select [formField]="form.text.comparator">
-            @for (comparator of textComparators; track comparator) {
-              <option [value]="comparator.value">{{ comparator.label }}</option>
-            }
-          </select>
-        </label>
-
-        <label>
-          Value
-          <input type="text" [formField]="form.text.value" />
-        </label>
-      }
-      <button type="submit" [disabled]="form().invalid()">Submit</button>
-    </form>
-
-    <pre>Form Value: {{ form().value() | json }}</pre>
-
-    <pre>Form Errors: {{ form().errorSummary() | json }}</pre>
-  `,
+  templateUrl: './conditional-reset.html',
 })
 export class ConditionalReset {
   protected readonly store = inject(Store);
@@ -141,9 +86,6 @@ export class ConditionalReset {
           // to have clear spinner blocker and feedback via a snackbar.
           // For other workflows, consider handling errors by this submit,
           // returning a form submission error which can be shown in the UI.
-          //
-          // Docs on form submission currently being reviewed:
-          // https://github.com/angular/angular/pull/67862
           await this.store.save();
         },
       },
@@ -152,9 +94,9 @@ export class ConditionalReset {
 
   private resetFormFields(fieldsToReset: 'numbers' | 'text' | null) {
     if (fieldsToReset === 'numbers') {
-      this.form.numbers().reset(numbersDefault);
+      this.form.numbers().reset(defaultConditionalFormModel.numbers);
     } else if (fieldsToReset === 'text') {
-      this.form.text().reset(textDefault);
+      this.form.text().reset(defaultConditionalFormModel.text);
     }
   }
 }
