@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, inject, linkedSignal } from '@angular/core';
+import { Component, effect, inject, linkedSignal } from '@angular/core';
 import {
   form,
   FormField,
