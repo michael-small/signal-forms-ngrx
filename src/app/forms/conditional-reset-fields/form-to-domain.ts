@@ -1,8 +1,10 @@
+import { Service } from '@angular/core';
 import { DomainModel } from './entity.model';
 import { FormModel } from './form.model';
 
+@Service()
 export class FormToDomain {
-  public static mapDomainToFormModel(domain: DomainModel): FormModel {
+  public mapDomainToFormModel(domain: DomainModel): FormModel {
     return {
       dbTable: domain.databaseTable,
       dbField: domain.databaseField,
@@ -12,7 +14,7 @@ export class FormToDomain {
     };
   }
 
-  public static mapFormModelToDomain(formModel: FormModel): DomainModel {
+  public mapFormModelToDomain(formModel: FormModel, stuff: number): DomainModel {
     return {
       databaseTable: formModel.dbTable,
       databaseField: formModel.dbField,

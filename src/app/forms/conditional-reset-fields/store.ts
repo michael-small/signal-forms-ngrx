@@ -20,16 +20,19 @@ export const Store = signalStore(
   { providedIn: 'root' },
   withProps(() => ({
     _dataService: inject(EntityDataService),
+    _formToDomain: inject(FormToDomain),
   })),
   withDevtools('ConditionalResetFormStore'),
-  withFeature((store) =>
-    withFormState({
+  withFeature((store) => {
+    const state = 1;
+
+    return withFormState({
       formDataStream: store._dataService.getFormData(),
       defaultFormModel: defaultConditionalFormModel,
-      mapDomainToFormFn: (domain) => FormToDomain.mapDomainToFormModel(domain),
-      mapFormToDomainFn: (form) => FormToDomain.mapFormModelToDomain(form),
-    }),
-  ),
+      mapDomainToFormFn: (domain) => store._formToDomain.mapDomainToFormModel(domain),
+      mapFormToDomainFn: (form) => store._formToDomain.mapFormModelToDomain(form, state),
+    });
+  }),
   withResource(
     (store) => ({
       dbTables: rxResource({
